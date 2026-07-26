@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CekSehat — Sistem AI Kesehatan Lokal</title>
+  <meta name="description" content="Sistem pemeriksaan kesehatan berbasis AI lokal untuk puskesmas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css?v=3" />
+</head>
+
+<body>
+
+  <!-- ══ HEADER ══════════════════════════════════════ -->
+  <header class="app-header" id="app-header">
+    <div class="header-logo">
+      <img src="/static/logo.png" alt="Logo" class="logo-icon" style="height: 32px; width: auto;" />
+      <span class="logo-text">CekSehat</span>
+    </div>
+    <nav class="step-indicator" id="step-indicator">
+      <div class="step-dot" data-step="1" title="Identifikasi"></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="2" title="Konfirmasi"></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="3" title="Sensor"></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="4" title="Tanya Jawab"></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="5" title="Rekaman"></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="6" title="Hasil"></div>
+    </nav>
+    <div class="header-time" id="header-time">00:00:00</div>
+  </header>
+
+  <!-- ══ TOAST ═══════════════════════════════════════ -->
+  <div class="toast" id="toast" role="alert"></div>
+
+  <!-- ══ MAIN ════════════════════════════════════════ -->
+  <main class="app-main">
+
+    <!-- ─ SCREEN: WELCOME ────────────────────────── -->
+    <section class="screen active" id="screen-welcome">
+      <div class="welcome-content">
+        <div class="welcome-hero">
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring delay-1"></div>
+          <img src="/static/logo.png" alt="Logo" class="hero-emoji"
+            style="height: 80px; width: auto; z-index: 1; position: relative;" />
+        </div>
+        <h1 class="welcome-title">Selamat Datang di<br /><span class="gradient-text">CekSehat</span></h1>
+        <div class="chip-row">
+          <span class="chip">Face Recognition</span>
+          <span class="chip">Sensor Kesehatan</span>
+          <span class="chip">AI Analysis</span>
+          <span class="chip">Notifikasi Telegram</span>
+        </div>
+        <button id="btn-start" class="btn btn-primary btn-xl" onclick="startApp()">
+          Mulai Pemeriksaan <span class="arrow">→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ─ SCREEN: IDENTIFY ───────────────────────── -->
+    <section class="screen" id="screen-identify">
+      <div class="screen-header">
+        <h2>Identifikasi Warga</h2>
+        <p>Scan wajah atau pilih nama dari daftar</p>
+      </div>
+      <div class="identify-layout">
+
+        <!-- Camera column -->
+        <div class="camera-card">
+          <div class="camera-wrap">
+            <video id="camera-preview" autoplay playsinline muted></video>
+            <canvas id="camera-canvas" style="display:none"></canvas>
+            <div class="camera-overlay">
+              <div class="face-ring"></div>
+            </div>
+            <div class="cam-status" id="cam-status">
+              <span class="cam-dot"></span> Kamera Aktif
+            </div>
+            <div class="cam-off-msg" id="cam-off-msg" style="display:none">
+              Kamera tidak tersedia
+            </div>
+          </div>
+          <button id="btn-scan" class="btn btn-primary btn-full" onclick="scanFace()">
+            Scan Wajah
+          </button>
+          <p class="cam-hint">Hadapkan wajah ke kamera, lalu tekan Scan</p>
+        </div>
+
+        <div class="or-sep"><span>atau</span></div>
+
+        <!-- List column -->
+        <div class="select-card">
+          <h3>Pilih dari Daftar Warga</h3>
+          <div class="warga-list" id="warga-list">
+            <div class="list-placeholder">⏳ Memuat daftar warga...</div>
+          </div>
+          <button class="btn btn-secondary btn-full" onclick="showHowToRegister()">
+            Cara Mendaftar
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─ SCREEN: HOW TO REGISTER ────────────────── -->
+    <section class="screen" id="screen-how-to-register">
+      <div class="screen-header">
+        <h2>Pendaftaran Warga Baru</h2>
+        <p>Petunjuk pendaftaran untuk pengguna baru</p>
+      </div>
+      <div class="form-card" style="text-align: center; padding: 3rem;">
+        <h3 style="margin-bottom: 1rem;">Pendaftaran Melalui Admin</h3>
+        <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.6;">
+          Untuk kemudahan Anda, pendaftaran dilakukan langsung oleh petugas kami.<br />
+          Silakan hubungi <strong>Admin/Petugas Puskesmas</strong> dan beritahukan data diri Anda.<br />
+          Petugas akan mendaftarkan Anda melalui sistem Telegram secara instan.
+        </p>
+        <button type="button" class="btn btn-primary btn-xl" onclick="goToScreen('identify'); loadIdentifyScreen()">←
+          Kembali ke Layar Awal</button>
+      </div>
+    </section>
+
+    <!-- ─ SCREEN: CONFIRM ────────────────────────── -->
+    <section class="screen" id="screen-confirm">
+      <div class="screen-header">
+        <h2>Warga Teridentifikasi</h2>
+        <p>Pastikan data di bawah sudah benar</p>
+      </div>
+      <div class="confirm-card">
+        <div class="cc-profile">
+          <div class="confirm-avatar" id="confirm-avatar"></div>
+          <h2 class="confirm-name" id="confirm-name">—</h2>
+        </div>
+        <div class="cc-info">
+          <div class="confirm-details" id="confirm-details"></div>
+          <div class="cc-actions">
+            <button class="btn btn-ghost" onclick="goToScreen('identify'); loadIdentifyScreen()">
+              Bukan saya
+            </button>
+            <button class="btn btn-primary btn-xl" id="btn-start-session" onclick="startSession(this)">
+              Mulai Pemeriksaan →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─ SCREEN: SENSOR ─────────────────────────── -->
+    <section class="screen" id="screen-sensor">
+      <div class="screen-header">
+        <h2>Pembacaan Sensor Vital</h2>
+        <p>Tekan tombol untuk mulai mengukur tanda-tanda vital</p>
+      </div>
+      <div class="vital-grid">
+        <div class="vital-card" id="vcard-hr">
+          <span class="vital-label">Detak Jantung</span>
+          <span class="vital-value" id="val-hr">—</span>
+          <span class="vital-unit">BPM</span>
+          <span class="vital-badge" id="badge-hr">—</span>
+        </div>
+        <div class="vital-card" id="vcard-spo2">
+          <span class="vital-label">Saturasi Oksigen</span>
+          <span class="vital-value" id="val-spo2">—</span>
+          <span class="vital-unit">%</span>
+          <span class="vital-badge" id="badge-spo2">—</span>
+        </div>
+        <div class="vital-card" id="vcard-suhu">
+          <span class="vital-label">Suhu Tubuh</span>
+          <span class="vital-value" id="val-suhu">—</span>
+          <span class="vital-unit">°C</span>
+          <span class="vital-badge" id="badge-suhu">—</span>
+        </div>
+      </div>
+      <div class="sensor-footer">
+        <button id="btn-read-sensor" class="btn btn-primary btn-xl" onclick="readSensor(this)">
+          Baca Sensor
+        </button>
+      </div>
+    </section>
+
+    <!-- ─ SCREEN: QUESTIONS ──────────────────────── -->
+    <section class="screen" id="screen-questions">
+      <div class="screen-header">
+        <h2>Tanya Jawab Medis</h2>
+        <p id="q-progress">Pertanyaan 1 dari ?</p>
+      </div>
+      <div class="question-card">
+        <div class="q-number" id="q-number">01</div>
+        <div class="q-text" id="q-text">Memuat pertanyaan...</div>
+        <div class="q-actions">
+          <button class="btn btn-yes" onclick="answerQuestion(true)">Ya</button>
+          <button class="btn btn-no" onclick="answerQuestion(false)">Tidak</button>
+        </div>
+      </div>
+      <div class="q-dots" id="q-dots"></div>
+    </section>
+
+    <!-- ─ SCREEN: RECORDING ──────────────────────── -->
+    <section class="screen" id="screen-recording">
+      <div class="screen-header">
+        <h2>Rekaman Suara Keluhan</h2>
+        <p>Ceritakan keluhan kesehatan Anda ke mikrofon</p>
+      </div>
+      <div class="recording-layout">
+        <div class="rec-camera-wrap" id="rec-camera-wrap"
+          style="background: var(--bg-card); display: flex; align-items: center; justify-content: center;">
+          <div style="font-size: 4rem; color: var(--primary);">🎙️</div>
+          <div class="rec-badge" id="rec-badge" style="display:none">
+            <span class="rec-dot"></span> REC
+          </div>
+          <div class="rec-server-overlay" id="rec-server-overlay" style="display:none">
+            <span>Sedang Merekam...</span>
+            <span class="rec-server-sub">Merekam suara Anda</span>
+          </div>
+        </div>
+        <div class="rec-info">
+          <div class="timer-display" id="timer-display">00:30</div>
+          <div class="timer-label" id="timer-label">Siap merekam</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+          <div class="rec-tips">
+            <p><strong>Tips rekaman:</strong></p>
+            <ul>
+              <li>Ceritakan gejala yang dirasakan</li>
+              <li>Sejak kapan keluhan mulai muncul</li>
+              <li>Tingkat keparahan (skala 1–10)</li>
+              <li>Riwayat obat yang sedang dikonsumsi</li>
+            </ul>
+          </div>
+          <button id="btn-start-rec" class="btn btn-primary btn-full" onclick="startRecording(this)">
+            🎙️ Mulai Rekam
+          </button>
+          <button id="btn-stop-rec" class="btn btn-full"
+            style="display:none; background-color: var(--red); color: white; border-color: var(--red);"
+            onclick="stopRecording()">
+            ⏹ Stop Rekaman
+          </button>
+          <button id="btn-skip-rec" class="btn btn-ghost btn-full" style="display:none" onclick="skipRecording()">
+            Lewati Rekaman → Lanjut ke Analisis
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─ SCREEN: ANALYZING ──────────────────────── -->
+    <section class="screen" id="screen-analyzing">
+      <div class="analyzing-wrap">
+        <div class="ai-ring-wrap">
+          <div class="ai-ring"></div>
+        </div>
+        <h2>AI Sedang Menganalisis</h2>
+        <p>Memproses seluruh data kesehatan Anda...</p>
+        <div class="ana-steps">
+          <div class="ana-step" id="ana-0">Menganalisis data sensor vital...</div>
+          <div class="ana-step" id="ana-1">Memproses hasil tanya jawab medis...</div>
+          <div class="ana-step" id="ana-2">Menyusun rekomendasi dan keputusan klinis...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─ SCREEN: RESULT ─────────────────────────── -->
+    <section class="screen" id="screen-result">
+      <div class="result-wrap">
+
+        <div class="result-badge" id="result-badge">
+          <span class="rb-icon" id="rb-icon"></span>
+          <span class="rb-title" id="rb-title">KONDISI AMAN</span>
+          <span class="rb-sub" id="rb-sub">Tidak ada tindakan darurat</span>
+        </div>
+
+        <div class="result-vitals" id="result-vitals"></div>
+
+        <div class="result-saran">
+          <h3>Rekomendasi AI</h3>
+          <p id="result-saran-text">—</p>
+        </div>
+
+        <div id="result-telegram-notif" class="telegram-notif" style="display:none">
+          <strong>Laporan pemeriksaan telah dikirim ke puskesmas via Telegram!</strong>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn btn-ghost" onclick="window.print()">Cetak</button>
+          <button class="btn btn-primary btn-xl" onclick="restartApp()">Selesai & Kembali</button>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /app-main -->
+
+  <script src="/static/app.js?v=3"></script>
+</body>
+
+</html>

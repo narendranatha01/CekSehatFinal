@@ -1,0 +1,33 @@
+# ══════════════════════════════════════════════════════
+# CekSehat — Python Dependencies
+# Raspberry Pi 5 / Linux / Windows (untuk testing)
+# ══════════════════════════════════════════════════════
+
+# ─── Web Framework ───────────────────────────────────
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+
+# ─── Database ─────────────────────────────────────────
+# SQLite built-in Python, tidak perlu install tambahan
+
+# ─── AI / HTTP ───────────────────────────────────────
+requests==2.32.3
+pydantic==2.7.1
+
+# ─── Computer Vision & Face Recognition ──────────────
+opencv-python==4.10.0.84
+# face_recognition membutuhkan dlib (install manual di bawah)
+# Di Raspberry Pi: pip install face_recognition
+numpy==1.26.4
+
+# ─── Sensor I2C (Raspberry Pi only) ──────────────────
+# smbus2==0.4.3          # Uncomment saat di Raspberry Pi
+# max30102==0.1.0        # Uncomment saat di Raspberry Pi
+
+# ─── Telegram ─────────────────────────────────────────
+python-telegram-bot==21.3
+
+# ─── Utilities ────────────────────────────────────────
+python-dotenv==1.0.1
+aiofiles==23.2.1
